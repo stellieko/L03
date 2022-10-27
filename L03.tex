@@ -1,0 +1,826 @@
+\documentclass[hyperref={pdfpagelabels=false},aspectratio=169]{beamer}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ngerman}
+\usepackage{xcolor}
+\usepackage{graphicx,tikz}
+\usetikzlibrary{shapes}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{tabu}
+\usepackage{multimedia}
+\usepackage{hyperref}
+
+\usetheme{CambridgeUS}
+
+\newcolumntype{"}{!{\vrule width 1pt}}
+
+\definecolor{THrot}{RGB}{200,30,15}
+\definecolor{THorange}{RGB}{234,90,0}
+\definecolor{THviolett}{RGB}{180,48,146}
+\definecolor{grau}{RGB}{220,220,220}
+\definecolor{hellgrau}{RGB}{217,217,217}
+\definecolor{dunkelgrau}{RGB}{127,127,127}
+
+
+\setbeamercolor{title}{fg=black, bg=hellgrau}
+\setbeamercolor{frametitle}{fg=black, bg=hellgrau}
+\setbeamercolor{structure}{fg=white}
+
+\setbeamercolor*{palette primary}{fg=white, bg=THorange}
+\setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=THrot}
+
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{enumerate items}[default]
+
+\setbeamertemplate{section in toc}[ball unnumbered]
+\setbeamertemplate{subsection in toc}[ball unnumbered]
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+  emptylines=0,
+  breaklines=true,
+  basicstyle=\ttfamily\color{THrot},
+  moredelim=**[is][\color{red}]{@}{@},
+}
+
+
+
+\setbeamertemplate{footline}{}
+
+\title{DIS08: Data Modelling\\ Lecture 03: File System and Shell}   
+\author{Christin Katharina Kreutz} 
+%\institute{Cologne University of Applied Sciences} 
+\date{}
+\begin{document}
+
+\vspace{-30pt}
+\begin{frame}
+\begin{figure}[htbp]
+		\begin{minipage}{0.45\textwidth}
+		\begin{flushleft}
+			\includegraphics[height=0.25\textwidth]{img/thkölnlogo.jpeg}
+		\end{flushleft} 
+	\end{minipage}
+	\hfill
+	\hfill
+	\begin{minipage}{0.45\textwidth}
+		\begin{flushright}
+			\includegraphics[height=0.25\textwidth]{img/ir-logo-black.png}
+		\end{flushright}
+	\end{minipage}
+\end{figure}
+
+
+\titlepage
+
+\end{frame}
+
+
+\setbeamertemplate{footline}{%
+	\leavevmode%
+	\hbox{%
+		\begin{beamercolorbox}[wd=.15\paperwidth,ht=2.25ex,dp=0ex,left]{empty}%
+			\usebeamerfont{author in head/foot}%
+			\pgftext[base, y=3ex, x=10ex]{%Kreutz
+			}
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.7\paperwidth,center,ht=2.25ex,  dp=0ex]{empty}%
+			\pgftext[base, y=3ex, x=0ex]{DIS08 L03: File System and Shell
+			}
+		\end{beamercolorbox}%
+		
+		\begin{beamercolorbox}[wd=.15\paperwidth,ht=2.25ex,dp=0ex,right]{white}%
+			\pgftext[base, y=3ex, x=-8ex]{\insertframenumber}
+		\end{beamercolorbox}%
+}}
+\setbeamercolor{structure}{fg=dunkelgrau}
+
+
+
+\setbeamertemplate{navigation symbols}{}
+
+
+
+
+\section{Recap and Outlook I}
+
+\begin{frame}
+\frametitle{}
+\begin{minipage}{0.54\textwidth}
+	\textbf{Recap:}
+	\begin{itemize}
+		\item Open Data
+		\item Data and File Formats
+	\end{itemize}
+
+\vspace{15pt}
+\textbf{Outlook:}
+
+\begin{itemize}
+	\item File System
+	\item Shell Introduction
+\end{itemize}
+
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\begin{center}
+	\resizebox{\textwidth}{!}{
+ \centering
+        \includegraphics{img/L03/filesystem_path_crop.pdf}
+        	}
+        	\tiny
+        icons from \url{https://icons8.de/}
+\end{center}
+\end{minipage}
+
+\vspace{25pt}
+
+\textbf{Questions:}
+How is data stored on the computer? How can I interact with it?
+\end{frame}
+
+
+\section{File System}
+
+\begin{frame}
+	\tableofcontents[currentsection]
+\end{frame}
+
+
+\subsection*{Introduction}
+
+\begin{frame}{Operation System (OS)}
+    
+    \begin{itemize}
+        \item Provides most important software on computer
+        \item Applications usually not runnable without OS
+        \item Building block of computer
+        \item Consist of many software components
+        \item Operation and control of applications
+        \item Connect hardware (processor, storage, devices) and applications 
+        \item Management of computers' resources, jobs, files, users and communication
+    \end{itemize}
+    
+    \vspace{10pt}
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/L03/betriebssysteme-erklaert-tech-uni.jpg}
+    
+    \tiny \url{shorturl.at/CDJQR}
+    
+\end{frame}
+
+\begin{frame}{File System as Tree*}
+    
+    \begin{minipage}{0.59\textwidth}
+        \begin{itemize}
+            \item OS store files in file system
+            \item Storage organisation on computer's volume (e.g. hard disc)
+            \item File systems different between OS
+            \item Structured as tree* (special type of graph)
+            \item Files and directories are nodes
+            \item File or sub-directory in directory are connected nodes via edges
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/L03/filesystem_crop.pdf}
+        
+        \tiny
+        icons from \url{https://icons8.de/}
+        
+    \end{minipage}
+    \tiny
+    *almost, hard links break the tree
+\end{frame}
+
+\begin{frame}{OS view}
+    
+    \begin{minipage}{0.49\textwidth}
+       \centering
+        \includegraphics[width=0.9\textwidth]{img/L03/filesystem_crop.pdf}
+        
+        \tiny
+        icons from \url{https://icons8.de/}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/L03/filesys.png}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}{Functions of File System}
+
+\begin{itemize}
+    \item Ensure data consistency 
+    \item Determine naming conventions and file attributes
+    \item Address, allocate and assign physical storage units to logical files
+    \item Manage access permissions
+    \item Manage metadata
+\end{itemize}
+    
+\end{frame}
+
+\subsection*{Components}
+
+\begin{frame}{Folders/Directories}
+    \begin{minipage}{0.5\textwidth}
+        \begin{itemize}
+            \item Cataloguing structure
+            \item Contain directories or files
+            \item Highest up directory is called \textbf{root directory} (or short \textbf{root}) (independent of name)
+            \item Directory \textit{root} contains directory \textit{home}
+            \begin{itemize}
+                \item \textit{home} is \textbf{subdirectory} of \textit{root}
+                \item \textit{root} is \textbf{parent} of \textit{home}
+                \item \textit{home} is \textbf{child} of \textit{root}
+            \end{itemize} 
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{img/L03/filesys.png}
+    \end{minipage}
+   
+\end{frame}
+
+\begin{frame}{Files}
+
+    \begin{minipage}{0.5\textwidth}
+        \begin{itemize}
+            \item Collection of logically connected data or information
+            \item Stored permanently on physical storage (e.g. on disc or SSD)
+            \item Files in file system have attributes:
+            \begin{itemize}
+                \item Names with restrictions depending on OS
+                \item Descriptor with attributes depending on OS (e.g. modification date, size, permissions, logical address of file in storage)
+                \item File Type 
+            \end{itemize}
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{img/L03/filesys.png}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}{File Types}
+    \begin{itemize}
+        \item Ending of file indicates type
+        \item Determines operational and structural characteristics of file
+        \item Determines program to open the file with
+    \end{itemize}
+    
+    \vspace{10pt}
+    \centering
+    \begin{tabular}{l|l}
+Type &	File ending \\ \hline 
+Executable & .exe, .cmd \\
+Source code	& .c, .cpp, .py, .java \\
+Batch &	.bat, .sh \\
+Word processing & .ipynb, .doc, .docx, .tex, .txt \\
+Library & .lib, .h \\
+Compression	& .gz, .zip, .7z\\
+Image & .bmp, .jpeg, .gif
+    \end{tabular}
+    
+\end{frame}
+
+\subsection*{Structure}
+\begin{frame}{Paths}
+    \begin{minipage}{0.59\textwidth}
+
+        \begin{itemize}
+            \item Description of logical storage information in file system
+            \item Follows tree structure
+            \item Describe way through graph through nodes via edges
+            \item Components indicate \textbf{folders} and \textbf{files}
+            \item Delimiter: \textcolor{THorange}{:}, \textcolor{THorange}{/} or \textcolor{THorange}{$\backslash$}
+            \item Example:
+            /\textcolor{THviolett}{root}/\textcolor{THrot}{home}/\textcolor{THorange}{Hen}/\textcolor{THviolett}{one.jpg}
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/L03/filesystem_path_crop.pdf}
+        
+        \tiny
+        icons from \url{https://icons8.de/}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}{Absolute and Relative Paths}
+    \begin{minipage}{0.59\textwidth}
+
+        \textbf{Absolute} 
+        \begin{itemize}
+            \item Show complete path
+            \item Start at \textbf{root} node
+            \item Example: /\textcolor{THviolett}{root}/\textcolor{THrot}{home}/\textcolor{THorange}{Hen}/\textcolor{THviolett}{one.jpg}
+        \end{itemize}
+        
+        \vspace{15pt}
+        \textbf{Relative} 
+        \begin{itemize}
+            \item Show only part of the path
+            \item Start from \textbf{current position} in file system
+            \item Example (position = home):             \begin{itemize}
+                \item \textbf{.}/\textcolor{THorange}{Hen}/\textcolor{THviolett}{one.jpg}
+                \item ../\textcolor{THrot}{home}/\textcolor{THorange}{Hen}/\textcolor{THviolett}{one.jpg}
+            \end{itemize}
+        \end{itemize}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/L03/filesystem_relative_crop.pdf}
+        
+        \tiny
+        icons from \url{https://icons8.de/}
+    \end{minipage}
+
+\end{frame}
+
+
+\section{Shell Introduction}
+
+\begin{frame}
+	\tableofcontents[currentsection]
+\end{frame}
+
+
+\subsection*{Motivation}
+\begin{frame}{Terminal on Mac}
+
+    \centering
+    \includegraphics[height=0.8\textheight]{img/L03/mac teminal.png}
+\end{frame}
+
+
+\begin{frame}{Terminal on Linux}
+
+    \centering
+    \includegraphics[height=0.8\textheight]{img/L03/linux terminal.png}
+\end{frame}
+
+\begin{frame}{Git Bash on Windows}
+
+    \centering
+    \includegraphics[height=0.8\textheight]{img/L03/windows bash.png}
+\end{frame}
+
+
+\subsection*{Introduction}
+\begin{frame}{General Information}
+    \begin{itemize}
+        \item Interaction with computer via textual commands
+        \item Command line interface
+        \item Primary interface for unix-based systems
+        \item Type in commands directly in terminal or execute them from file
+        \item Allows for automation of tasks
+        \item Allows for fast combination of commands
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{How does it work?}
+
+    \begin{itemize}
+        \item Open command prompt:
+        \begin{itemize}
+            \item Windows: cmd (see e.g. this video \url{https://www.youtube.com/watch?v=uE9WgNr3OjM})
+            \item Linux: terminal (see e.g. this video \url{https://www.youtube.com/watch?v=KKTgw2jFnUg})
+            \item Mac: terminal (see e.g. this video \url{https://www.youtube.com/watch?v=QROX039ckO8})
+        \end{itemize}
+        \item See prompt ready for input
+        \item Type in command (e.g. \texttt{ls}, this lists all files and directories in your current directory)
+        \item Press enter
+    \end{itemize}
+    
+    \vspace{5pt}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/L03/ls.png}
+    
+\end{frame}
+
+
+
+\begin{frame}{Example}
+
+    \textbf{Scenario}: we have a compressed (zipped) dataset named data.zip with $\sim$ 100 GB of data, all in tiny files.
+
+    \begin{itemize}
+        \item[1.] Count files:
+        
+        \texttt{zipinfo -1 data.zip | wc -l}
+        \vspace{5pt}
+        \item[2.] Count files in txt format:
+
+        \texttt{zipinfo -1 data.zip | grep -c .txt}
+        \vspace{5pt}
+        \item[3.] Unzip a subset (txt files) to another directory:
+        
+        \texttt{mkdir ./otherDir}
+
+        \texttt{unzip data.zip '*.txt' -d otherDir}
+    \end{itemize}
+    
+    \vspace{10pt}
+
+    These operations are not possible using the file system directly via Finder or Explorer
+\end{frame}
+
+\begin{frame}{Example explained \small (1/3)}
+
+    \begin{itemize}
+        \item[1.] Count files:
+        
+        \texttt{zipinfo -1 data.zip | wc -l}
+    \end{itemize}
+    
+    \begin{itemize}
+        \item \texttt{zipinfo}: gives \textbf{info}rmation on \textbf{zip}ped data
+        \item \texttt{zipinfo -1}: lists names, one per line of unzipped files and directories of following compressed argument
+        \item \texttt{|}: pipe, combine commands, give result/output of command left of symbol as input of command right of symbol
+        \item \texttt{wc}: \textbf{w}ord \textbf{c}ount, returns number of lines, number of words, number of signs
+        \item \texttt{wc -l}: return number of lines
+    \end{itemize}
+    
+    \vspace{10pt}
+
+    $\rightarrow$ list files and directories in compressed directory, count how many there are
+\end{frame}
+
+\begin{frame}{Example explained \small (2/3)}
+
+    \begin{itemize}
+        \item[2.] Count files in txt format:
+
+        \texttt{zipinfo -1 data.zip | grep -c .txt}
+    \end{itemize}
+    
+    \begin{itemize}
+        \item \texttt{grep}: searches for patterns or regular expressions (see next lecture) in files
+        \item \texttt{grep -c}: counts and prints number of lines fitting pattern
+        \item \texttt{grep -c pattern}: counts and prints number of lines fitting determined expression \textit{pattern}
+    \end{itemize}
+    
+    \vspace{10pt}
+
+    $\rightarrow$ list files and directories in compressed directory, count how many there are with .txt ending
+\end{frame}
+
+\begin{frame}{Example explained \small (3/3)}
+
+    \begin{itemize}
+        \item[3.] Unzip a subset (txt files) to another directory: 
+        
+        \texttt{mkdir ./otherDir}
+
+        \texttt{unzip data.zip '*.txt' -d otherDir}
+    \end{itemize}
+    
+    \begin{itemize}
+        \item \texttt{mkdir folderName}: \textbf{m}a\textbf{k}e \textbf{dir}ectory, create new directory with name of directory
+        \item \texttt{.}: current position
+        \item \texttt{./}: subfolder in current position
+        \item \texttt{unzip}: lists, tests, or extracts files from a ZIP archive
+        \item \texttt{unzip archive.zip 'pattern'}: extract files from zipped archive fitting specified expression \textit{'pattern'} 
+        \item \texttt{unzip archive.zip -d otherDir}: extract files to specified directory \textit{otherDir}
+    \end{itemize}
+    
+    \vspace{10pt}
+
+    $\rightarrow$ create new directory in current one, unzip data with pattern and copy files into new directory
+\end{frame}
+
+
+\subsection*{Commands}
+\begin{frame}{General Information}
+    \begin{itemize}
+        \item Commands can have options, parameters, arguments
+        
+        as seen with example 1: \texttt{wc} \textcolor{THorange}{\texttt{-l}}
+        \item Arguments modify the workings of the command by determining a sort of output or manipulation we want
+        \item \textbf{TAB} for auto completion
+        \item \textbf{UP} for history of commands
+        \item Search command from history: \textbf{CTRL} + \textbf{R} (bash, zsh) + type in (part of) the command you are searching for
+        \item Cancel commands: \textbf{CTRL} + \textbf{X} (bash), \textbf{CTRL} + \textbf{C} (zsh)
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Output \small(1/2)}
+    \begin{itemize}
+        \item Standard output to shell
+        \item Redirecting output possible with \textcolor{THviolett}{\texttt{>}} and \textcolor{THviolett}{\texttt{|}}
+        
+        as seen with example 2: \texttt{zipinfo -1 data.zip} \textcolor{THorange}{\texttt{|}} \texttt{grep -c .txt}
+        \item Redirect output of command to file with \texttt{>}
+        
+        \vspace{2pt}
+        \includegraphics[width=0.9\textwidth]{img/L03/grepsmaller.png}
+
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Output \small(2/2)}
+    \begin{itemize}
+
+        \item Append output of command to file with \texttt{>}\texttt{>}
+        
+        
+        \vspace{2pt}
+        \includegraphics[width=0.9\textwidth]{img/L03/echosmaller.png}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Wildcards}
+
+    \begin{itemize}
+        \item As seen with example 3: \texttt{unzip data.zip '}\textcolor{THorange}{\texttt{*}}\texttt{.txt' -d otherDir}
+        \item Wildcards are a feature of the shell and work with any command
+        \item Shell will expand wildcards to a list of files and/or directories before the command is executed
+        \item Command will never see the wildcards
+        \item \textcolor{THviolett}{*} matches zero or more characters
+        
+        e.g. \texttt{ls *.pdf} $\rightarrow$  \texttt{ls DIS08\_L01.pdf, DIS08\_L02.pdf, $\dots$}
+        \item \textcolor{THviolett}{?} matches exactly one character
+        
+        e.g. \texttt{ls co?e.pdf} $\rightarrow$  \texttt{ls cole.pdf, code.pdf, $\dots$}
+    \end{itemize}
+    
+\end{frame} 
+
+\begin{frame}{Different Commands}
+    
+    \begin{itemize}
+        \item Differences in commands depending on OS (e.g. forward slash and backslash)
+        \item Differences in commands depending on used shell flavour, shown commands work with zsh
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{Shell Flavours}
+
+Find out which shell flavour you are using with command: \texttt{echo \$0} (output the name of the current program/script)
+
+\vspace{2pt}
+\includegraphics[width=0.5\textwidth]{img/L03/dollar0.png}
+
+\vspace{10pt}
+    \centering
+    \footnotesize
+    \begin{tabular}{l|l|l|l|l}
+        Short & Name & Found with &  Root prompt & Non-root prompt \\ \hline
+        zsh & Z Shell & Mac & \# & \%\\
+        sh & Bourne Shell & Linux & \# & \$\\
+        bash & Bourne-Again Shell & Linux, Mac, Windows & \# & \$\\
+        csh & C Shell & Linux & \# & \%\\
+        ksh & Korn Shell & Linux & \# &\$\\
+        ps & PowerShell & Windows & > & >\\
+        cmd & Windows Command Prompt & Windows & > & > \\
+    \end{tabular}
+    
+\end{frame}
+
+
+
+
+\begin{frame}{More commands \small (1/5)}
+    \begin{itemize}
+        \item \texttt{pwd}: \textbf{p}rint \textbf{w}orking \textbf{d}irectory, shows current path
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/pwd.png}
+    
+        \item \texttt{cd ..}: \textbf{c}hange \textbf{d}irectory, \texttt{\textcolor{THorange}{..}} means go up a level
+    
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/cddotdot.png}
+        
+        \item \texttt{cd ./} + \textbf{TAB}: show options of direcories to change directory to, \texttt{\textcolor{THorange}{.}} means options should be considered from current level
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/cdtab.png}
+    
+        \item \texttt{cd ./christin}: change directory to specified relative path
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/cdchristin.png}
+    \end{itemize}
+    
+\end{frame}
+
+
+
+\begin{frame}{More commands \small (2/5)}
+
+    \begin{itemize}
+        \item \texttt{cd ../christin/Applications}: combine different levels when changing directory
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/cdpwd.png}
+
+        \item \texttt{cd \grqq Journal Club\grqq}: enclose spaces in directory names with quotation marks
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/cdquote.png}
+
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{More commands \small (3/5)}
+
+    \begin{itemize}
+        \item \texttt{echo 'text'}: outputs following text
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/echo.png}
+
+        \item \texttt{echo \$HOME}: outputs following variable (in this case the home directory)
+        
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/echohome.png}
+    
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{More commands \small (4/5)}
+
+    \begin{itemize}
+        \item \texttt{ls -l}: \textbf{l}i\textbf{s}t, show all files and directories in current directory, \texttt{-l} gives long version of output (dates, size, owner, permissions)
+    
+        \vspace{2pt}
+        \includegraphics[width=\textwidth]{img/L03/lsl.png}
+    
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{More commands \small (5/5)}
+
+    \begin{itemize}
+        \item \texttt{ls -lh}: \texttt{-lh} gives human readable long version of output (dates, size, owner, permissions)
+    
+        \vspace{2pt}
+        \includegraphics[width=0.82\textwidth]{img/L03/lslh.png}
+        
+    \end{itemize}
+        
+\end{frame}
+
+
+\begin{frame}{Many more commands}
+    
+    \begin{itemize}
+        \item \texttt{cp}: \textbf{c}o\textbf{p}y file or directory
+        \item \texttt{mv}: \textbf{m}o\textbf{v}e/rename file or directory
+        \item \texttt{touch}: create file
+        \item \texttt{mkdir}: \textbf{m}a\textbf{k}e \textbf{dir}ectory
+        \item \texttt{rm}: \textbf{r}e\textbf{m}ove file
+        \item \texttt{rmdir}: \textbf{r}e\textbf{m}ove \textbf{dir}ectory
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Even more commands}
+    
+    \begin{itemize}
+        \item \texttt{cat}: read the content of a file and print it to stdout
+        \item \texttt{head}: read the beginning of a file and print it to stdout
+        \item \texttt{tail}: read the end of a file and print it to stdout
+        \item \texttt{less}: read the content of a file, print only as much as fits on screen, press SPACEBAR to see next screen
+        \item \texttt{sort}: read the content of a file, sort it line by line and print it to stdout; \texttt{sort -n} sorts numerically
+        \item \texttt{uniq}: read the content of a file, remove redundant lines in the file and print it to stdout
+        \item $\dots$
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Another Example}
+    \textbf{Scenario}: finding the file with the fewest lines
+    
+    \begin{itemize}
+        \item \textbf{Disclaimer}: if there are only few files to compare, it might be faster or more convenient to just check with Microsoft Excel, OpenRefine or your favourite text editor
+        \item \textbf{BUT} when we have tens, hundreds or thousands of documents, the shell has a clear speed advantage
+        \item The real power of the shell comes from being able to \textbf{combine commands} and \textbf{automate tasks}
+        \item We can build a simple pipeline to solve our task
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+    \includegraphics[height=0.85\textheight]{img/L03/task.png}
+\end{frame}
+
+
+\begin{frame}{Pipes and Filters}
+    
+    \begin{itemize}
+        \item Do not create enormous programs that try to do many different things, focus on creating lots of simple tools that each do one job well, and that work well with each other \\$\rightarrow$ \textbf{pipes and filters} programming model
+        \item We already saw/used pipes
+        \item We already saw/used filters (e.g. \texttt{wc} or \texttt{sort}), commands/programs that transform a stream of input into a stream of output
+        \item Almost all of the standard Unix tools can work this way; unless told to do otherwise, read from standard input, do something with that data, write to standard output
+        \item \textbf{Key}: any program that reads lines of text from standard input and writes lines of text to standard output can be combined with every other program that behaves this way
+        \item Write your programs this way to combine them and multiply their power
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}
+    \begin{minipage}{0.70\textwidth}
+    
+    \textbf{When in doubt...}
+    \begin{itemize}
+        \item Manual page (man page) for commands
+        \item Command: \texttt{man command}
+    \end{itemize}
+    
+    \includegraphics[width=0.8\textwidth]{img/L03/cd.png}
+    
+    \vspace{10pt}
+    \includegraphics[width=0.8\textwidth]{img/L03/man cd.png}
+    
+\end{minipage}
+\begin{minipage}{0.29\textwidth}
+\centering
+\includegraphics[height=0.85\textheight]{img/L03/man_page.png}
+\tiny 
+    
+    Randall Munroe, \url{https://xkcd.com/1692}, CC BY-NC 2.5
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}{Additional Resources}
+    
+    \begin{itemize}
+        \item Man pages for commands: \url{https://linux.die.net/man/}
+        \item Permissions: \url{https://linuxcommand.org/lc3_lts0090.php}
+        \item The Linux Command Line (W. Shotts): \url{https://linuxcommand.org/tlcl.php}
+
+    \end{itemize}
+\end{frame}
+
+
+\section{Recap and Outlook II}
+
+\begin{frame}
+	\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}
+\begin{minipage}{0.54\textwidth}
+	\textbf{Recap:}
+	\begin{itemize}
+		\item File System
+		\item Shell Introduction
+	\end{itemize}
+
+\vspace{15pt}
+\textbf{Outlook:}
+
+\begin{itemize}
+	\item RegEx
+	\item Shell Script
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\begin{center}
+	\resizebox{\textwidth}{!}{
+        \centering
+        \includegraphics{img/L03/filesystem_path_crop.pdf}
+    }
+    \tiny
+    icons from \url{https://icons8.de/}
+\end{center}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}{What do you need to do now?}
+
+    \begin{itemize}
+        \item Navigate through the file system on your computer/laptop
+        \item Navigate through the file system on your computer/laptop using the shell
+        \item Find out which type of shell you are using
+        \item Open the man page for commands which are unclear
+        \item Consider surprising a friend with the UNIX Pipe Card Game (\url{https://punkx.org/unix-pipe-game/})
+    \end{itemize}
+    
+    \vspace{20pt}
+    \centering
+    \normalsize
+    \textbf{Thank you for your kind attention!}
+\end{frame}
+
+\end{document}
